@@ -28,32 +28,14 @@ class ListItem extends StatelessWidget {
           /* List tile - Contains text and leading or trailing icon */
           child: ListTile(
             contentPadding: EdgeInsets.symmetric(
-                horizontal: 20.0, vertical: 10.0),
+                horizontal: 20.0, vertical: 12.0),
 
             /* Leading - Left arrow to tag/untag product */
-            leading: Icon(
-                Icons.keyboard_arrow_left, color: Colors.white,
-                size: 30.0),
-
-            /* Main text - Product name*/
-            title: Text(
-              this._product.name,
-              style: TextStyle(color: Colors.white,
-                  fontWeight: FontWeight.bold),
-            ),
-
-            /* Subtitle text - Quantity and total price */
-            subtitle: Text(
-                "Quantity: #${this._product.quantity}  |  Price: ${this._product.totalPrice}€",
-                style: TextStyle(color: Colors.white)
-            ),
-
-            /* Trailing - Border separator and product image */
-            trailing: Container(
-              padding: EdgeInsets.only(left: 15.0),
+            leading: Container(
+              padding: EdgeInsets.only(right: 20.0),
               decoration: BoxDecoration(
                 border: Border(
-                    left: BorderSide(
+                    right: BorderSide(
                       width: 1.0,
                       color: Colors.white24,
                     )
@@ -65,6 +47,56 @@ class ListItem extends StatelessWidget {
                 height: 70,
                 fit: BoxFit.fill,
               ),
+            ),
+
+            /* Main text - Product name*/
+            title: Text(
+              this._product.name,
+              style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                  letterSpacing: 0.8,
+              ),
+            ),
+
+            /* Subtitle text - Quantity and total price */
+            subtitle: Text(
+                "Quantity: ${this._product.quantity}\nPrice: ${this._product.totalPrice}€",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 17,
+                    letterSpacing: 0.8,
+                ),
+            ),
+
+            trailing: Row(
+
+              mainAxisSize: MainAxisSize.min,
+
+              children: <Widget>[
+
+                IconButton(
+                  icon: Icon(
+                      Icons.remove,
+                      color: Colors.white,
+                  ),
+                  tooltip: "Decrement product quantity",
+                  onPressed: () {
+
+                  },
+                ),
+                IconButton(
+                  icon: Icon(
+                      Icons.add,
+                      color: Colors.white
+                  ),
+                  tooltip: "Increment product quantity",
+                  onPressed: () {
+
+                  },
+                ),
+              ],
             ),
 
             onTap: () {

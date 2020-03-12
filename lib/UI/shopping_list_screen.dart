@@ -35,53 +35,68 @@ class _ShoppingListPageState extends State<ShoppingListPage> {
 
       body: Center(
 
-        /* Products displayed vertically */
-        child: Column(
+        child: LayoutBuilder(
+          builder: (BuildContext context, BoxConstraints viewportConstraints) {
 
-          /* List of Items */
-          children: <Widget>[
+            /* Enables vertical scrolling */
+            return SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                    minHeight: viewportConstraints.maxHeight,
+                ),
 
-            /* Stream listener and item builder */
-            StreamBuilder(
-                stream: this._bloc.output,
-                builder: (BuildContext context, AsyncSnapshot snapshot) {
+                /* Products displayed vertically */
+                child: Column(
 
-                  /* Checks if data was received */
-                  if (snapshot.hasData) {
+                  /* List of Items */
+                  children: <Widget>[
 
-                    /* If single object was received, return ListItem */
-                    if (snapshot.data.runtimeType == Product) {
+                    /* Stream listener and item builder */
+                    StreamBuilder(
+                      stream: this._bloc.output,
+                      builder: (BuildContext context, AsyncSnapshot snapshot) {
 
-                      return ListItem(snapshot.data as Product);
+                        /* Checks if data was received */
+                        if (snapshot.hasData) {
 
-                      /* If list was received, return Column containing all ListItem objects*/
-                    } else {
+                          /* If single object was received, return ListItem */
+                          if (snapshot.data.runtimeType == Product) {
+                            return ListItem(snapshot.data as Product);
 
-                      var products = snapshot.data as List<Product>;
+                          }
+                          /* If list was received, return Column containing all ListItem objects*/
+                          else {
+                            var products = snapshot.data as List<Product>;
 
-                      return Column(
-                        children: List.generate(
-                          products.length,
-                            (index) {
-                            return ListItem(products[index]);
-                            }),
-                      );
-                    }
-                  }
-                  /* If nothing was received, return empty container */
-                  return Container();
-                }
-            ),
-          ],
+                            return Column(
+                              children: List.generate(
+                                  products.length,
+                                      (index) => ListItem(products[index])
+                              ),
+                            );
+                          }
+                        }
+                        /* If nothing was received, return empty container */
+                        return Container();
+                      }
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
         ),
       ),
+
+      /* 'Add Product' form FAB */
       floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ProductFormScreen(),
-          ),
-        ),
+        onPressed: () =>
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ProductFormScreen(),
+              ),
+            ),
         child: Icon(Icons.add, color: Colors.white),
         backgroundColor: Colors.orange,
       ),

@@ -37,7 +37,7 @@ class Product {
     const productNames = ["Fish", "Orange", "Sugar", "Tuna", "Banana", "Egg", "Milk"];
 
     return List.generate(
-          productNames.length - 1,
+          productNames.length,
               (index) =>
               Product(
                 'lib/assets/${productNames[index]}.jpg',
