@@ -29,9 +29,23 @@ class Product {
     this._totalPrice = this._unitPrice * this._quantity;
   }
 
-  /* List of default product names */
-  static const _productNames = ["Fish", "Orange", "Sugar Bag", "Tuna Can", "Banana", "Egg"];
-  static List<String> get productNames => _productNames;
+  Product(this._imageLocation, this._name, this._quantity, this._observations, this._unitPrice) : _totalPrice = _unitPrice * _quantity;
 
-  Product(this._imageLocation, this._name, this._quantity, this._observations, this._unitPrice);
+  /* Returns List of default product */
+  static List<Product> productNames() {
+
+    const productNames = ["Fish", "Orange", "Sugar", "Tuna", "Banana", "Egg", "Milk"];
+
+    return List.generate(
+          productNames.length - 1,
+              (index) =>
+              Product(
+                'lib/assets/${productNames[index]}.jpg',
+                productNames[index],
+                index + 1,
+                "Must buy $index",
+                (productNames.length - index).toDouble(),
+              )
+      );
+  }
 }
