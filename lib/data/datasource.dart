@@ -8,7 +8,7 @@ class DataSource {
 
   static DataSource _instance;
 
-  DataSource._internal() : _datasource = Product.productNames();
+  DataSource._internal() : _datasource = Product.init();
 
   /* Returns Singleton */
   static DataSource getInstance() {
@@ -21,9 +21,23 @@ class DataSource {
     return _instance;
   }
 
-  /* Adds data to list */
-  void insert(data) => _datasource.add(data);
+  /* Data "setters" */
 
-  /* Returns list containing all data inserted (and dummies) */
-  List<Product> getAll() => _datasource;
+  /* Adds product to list */
+  void addProduct(product) => this._datasource.add(product);
+
+  /* Removes product from list */
+  void removeProduct(product) => this._datasource.remove(product);
+
+  /*
+  * Loops over products
+  * If p == product, change isTagged value
+  * Else, maintain value
+  */
+  void toggleProductState(product) => this._datasource.forEach((p) => p.isTagged = (product == p) ? !p.isTagged : p.isTagged );
+
+  /* Data "getters" */
+
+  /* Returns all product in List form */
+  List<Product> getAll() => this._datasource;
 }
