@@ -11,7 +11,12 @@ class Product {
 
   int _quantity;
   int get quantity => this._quantity;
-  set quantity(quantity) => this._quantity = quantity;
+  set quantity(quantity) {
+
+    this._quantity = quantity;
+
+    this._totalPrice = this._quantity * this._unitPrice;
+  }
 
   double _totalPrice;
   double get totalPrice => this._totalPrice;
@@ -44,15 +49,7 @@ class Product {
   /* Returns List of default product */
   static List<Product> init() {
 
-    const productNames = ["Fish", "Orange", "Sugar", "Tuna", "Banana", "Egg", "Milk"];
-
-    var x = Product(
-      'lib/assets/${productNames[0]}.jpg',
-      productNames[0],
-      1,
-      "Must buy",
-      (productNames.length).toDouble(),
-    );
+    const productNames = ["Water", "Steak", "Milk", "Mango", "Orange", "Banana", "Cookie", "Beer"];
 
     return List.generate(
           productNames.length,
@@ -60,11 +57,16 @@ class Product {
               Product(
                 'lib/assets/${productNames[index]}.jpg',
                 productNames[index],
-                index + 1,
+                index * 2 + 1,
                 "Must buy $index",
-                (productNames.length - index).toDouble(),
+                (productNames.length * 2 - (index + 8)).toDouble(),
               )
       );
+  }
+
+  @override
+  String toString() {
+    return "Product: ${this.name}  |  #${this.quantity}  |  ${this.totalPrice}€";
   }
 
   /* Overide the == operator */

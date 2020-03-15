@@ -46,12 +46,13 @@ flutter:
   #  - images/a_dot_ham.jpeg
   assets:
     - lib/assets/Banana.jpg
-    - lib/assets/Egg.jpg
-    - lib/assets/Fish.jpg
-    - lib/assets/Orange.jpg
-    - lib/assets/Sugar.jpg
-    - lib/assets/Tuna.jpg
+    - lib/assets/Beer.jpg
+    - lib/assets/Cookie.jpg
+    - lib/assets/Mango.jpg
     - lib/assets/Milk.jpg
+    - lib/assets/Orange.jpg
+    - lib/assets/Steak.jpg
+    - lib/assets/Water.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

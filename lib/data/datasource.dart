@@ -24,17 +24,62 @@ class DataSource {
   /* Data "setters" */
 
   /* Adds product to list */
-  void addProduct(product) => this._datasource.add(product);
+  void addProduct(product) {
+
+    this._datasource.add(product);
+
+    print("Added $product");
+  }
 
   /* Removes product from list */
-  void removeProduct(product) => this._datasource.remove(product);
+  void removeProduct(product) {
 
-  /*
-  * Loops over products
-  * If p == product, change isTagged value
-  * Else, maintain value
-  */
-  void toggleProductState(product) => this._datasource.forEach((p) => p.isTagged = (product == p) ? !p.isTagged : p.isTagged );
+    this._datasource.remove(product);
+
+    print("Removed: $product");
+  }
+
+  void incrementProductQuantity(product) {
+
+    for(var p in this._datasource) {
+
+      if(p == product) {
+
+        p.quantity++;
+
+        print("Incremented quantity: $product");
+      }
+    }
+  }
+
+  void decrementProductQuantity(product) {
+
+    for(var p in this._datasource) {
+
+      if(p == product) {
+
+        if(p.quantity > 0) {
+
+          p.quantity--;
+
+          print("Decremented quantity: $product");
+        }
+      }
+    }
+  }
+
+  void toggleProductState(product) {
+
+    for(var p in this._datasource) {
+
+      if(p == product) {
+
+        p.isTagged = !p.isTagged;
+
+        print("Toggled state: $product");
+      }
+    }
+  }
 
   /* Data "getters" */
 

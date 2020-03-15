@@ -1,37 +1,36 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'package:mini_projeto/UI/product_form.dart';
-import 'package:mini_projeto/blocs/product_bloc.dart';
+import 'package:mini_projeto/UI/product_form_screen.dart';
+import 'package:mini_projeto/blocs/list_bloc.dart';
 import 'package:mini_projeto/data/product.dart';
 
 class ListItem extends StatefulWidget {
 
   final Product product;
-  final ProductBloc bloc;
+  final ListBloc bloc;
 
   ListItem( {Key key, this.product, this.bloc} ) : super(key: key);
 
   @override
-  _ListItemState createState()  => _ListItemState(this.bloc);
+  _ListItemState createState()  => _ListItemState();
 }
 
 class _ListItemState extends State<ListItem> {
 
   var _color;
-  final ProductBloc _bloc;
 
   static const tagged = Colors.red,
       notTagged = Color.fromRGBO(64, 75, 96, 0.9);
 
-  _ListItemState(this._bloc) {
+  _ListItemState() {
 
     this._color = notTagged;
   }
 
   void toggleItemColor() {
 
-    this._bloc.onToggleProductState(this.widget.product);
+    this.widget.bloc.onToggleProductState(this.widget.product);
 
     setState(() {
       this._color = this.widget.product.isTagged ? tagged : notTagged;
@@ -41,14 +40,14 @@ class _ListItemState extends State<ListItem> {
   void incrementItemQuantity() {
 
     setState(() {
-      this.widget.product.quantity++;
+      this.widget.bloc.onIncrementProductQuantity(this.widget.product);
     });
   }
 
   void decrementItemQuantity() {
 
     setState(() {
-      this.widget.product.quantity--;
+      this.widget.bloc.onDecrementProductQuantity(this.widget.product);
     });
   }
 
@@ -77,6 +76,7 @@ class _ListItemState extends State<ListItem> {
 
       onDismissed: (direction) {
 
+        this.widget.bloc.onRemoveProduct(this.widget.product);
       },
 
       /* Card wrapper - for slightly round corners and a shadow */
