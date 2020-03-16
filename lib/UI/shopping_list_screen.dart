@@ -34,12 +34,14 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
     /* Listen on any changes for the list */
     this._listBloc.output.listen((onData) {
 
+      print(onData.runtimeType);
+
       setList(onData);
     });
   }
 
   /* Re-writes products list to update UI */
-  void setList(list) {
+  void setList(List<Product> list) {
 
     setState(() {
 

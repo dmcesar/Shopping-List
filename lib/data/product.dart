@@ -39,7 +39,10 @@ class Product {
   bool get isTagged => this._isTagged;
   set isTagged(bool) => this._isTagged = bool;
 
-  Product(this._imageLocation, this._name, this._quantity, this._observations, this._unitPrice) {
+  Product(this._name, this._quantity, this._unitPrice, {String imageLocation = "lib/assets/noImage.jpg", String observations = ""}) {
+
+    this._imageLocation = imageLocation;
+    this._observations = observations;
 
     this._totalPrice = this._unitPrice * this._quantity;
 
@@ -55,11 +58,10 @@ class Product {
           productNames.length,
               (index) =>
               Product(
-                'lib/assets/${productNames[index]}.jpg',
                 productNames[index],
                 index * 2 + 1,
-                "Must buy $index",
                 (productNames.length * 2 - (index + 8)).toDouble(),
+                imageLocation: 'lib/assets/${productNames[index]}.jpg',
               )
       );
   }
