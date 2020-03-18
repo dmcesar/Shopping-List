@@ -3,37 +3,70 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mini_projeto/UI/shopping_list_screen.dart';
 
 import 'package:mini_projeto/blocs/form_bloc.dart';
 import 'package:mini_projeto/data/product.dart';
 
-class ProductForm extends StatefulWidget {
+class ProductFormScreen extends StatefulWidget {
 
-  final FormBloc bloc;
-  final Product product;
+  static const routeName = "/form";
 
-  ProductForm({Key key, this.bloc, this.product}) : super(key: key);
+  final FormBloc formBloc;
+
+  ProductFormScreen({Key key, @required this.formBloc}) : super(key: key);
 
   @override
-  _ProductFormState createState() => _ProductFormState();
+  _ProductFormScreenState createState() => _ProductFormScreenState(this.formBloc);
 }
 
-class _ProductFormState extends State<ProductForm> {
+class _ProductFormScreenState extends State<ProductFormScreen> {
 
+  /* Request handler */
+  FormBloc formBloc;
+  Product product;
+
+  /* Keys to validate each form */
   final _emptyFormKey = GlobalKey<FormState>(), _editFormKey = GlobalKey<FormState>();
 
-  /* Create a text controller and use it to retrieve the current value of the TextField */
+  /* Text Field controllers to retrieve text from them */
   TextEditingController nameFieldController, quantityFieldController, unitPriceFieldController, observationsFieldController;
 
   /* File containing product's image */
   File _selectedImage;
 
-  _ProductFormState() {
+  _ProductFormScreenState(this.formBloc) {
 
     this.nameFieldController = TextEditingController();
     this.quantityFieldController = TextEditingController();
     this.unitPriceFieldController = TextEditingController();
     this.observationsFieldController = TextEditingController();
+  }
+
+  showAlertDialog(BuildContext context, String title, String message, Function onPressed) {
+
+    // set up the button
+    Widget okButton = FlatButton(
+      child: Text("OK"),
+      onPressed: () => onPressed(),
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text(title),
+      content: Text(message),
+      actions: [
+        okButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
   }
 
   /* Retrieves image from ImageSource.gallery and assigns it to _selectedImage */
@@ -359,10 +392,10 @@ class _ProductFormState extends State<ProductForm> {
                         decoration: BoxDecoration(
                           shape: BoxShape.circle, /* Makes image circular */
                           image: DecorationImage(
-                            image: (this.widget.product.assetImage)
+                            image: (this.product.assetImage)
                                 ? AssetImage(
-                                this.widget.product.imageLocation)
-                                : FileImage(File(this.widget.product
+                                this.product.imageLocation)
+                                : FileImage(File(this.product
                                 .imageLocation)),
                             fit: BoxFit
                                 .fill, /* Fill area with image (no clipping) */
@@ -385,7 +418,7 @@ class _ProductFormState extends State<ProductForm> {
                           children: <Widget>[
 
                             Text(
-                              this.widget.product.name,
+                              this.product.name,
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 20,
@@ -396,9 +429,9 @@ class _ProductFormState extends State<ProductForm> {
                             ),
 
                             Text(
-                              "Quantity: ${this.widget.product.quantity}\n"
-                                  "Price: ${this.widget.product.totalPrice}€\n"
-                                  "Unit-Price: ${this.widget.product.unitPrice}\n",
+                              "Quantity: ${this.product.quantity}\n"
+                                  "Price: ${this.product.totalPrice}€\n"
+                                  "Unit-Price: ${this.product.unitPrice}\n",
                               style: textStyle,
                             ),
                           ],
@@ -412,7 +445,7 @@ class _ProductFormState extends State<ProductForm> {
                 Container(
                   margin: EdgeInsets.all(10.0),
                   child: Text(
-                  "Observations: ${this.widget.product.observations}",
+                  "Observations: ${this.product.observations}",
                   style: textStyle,
                 )
                 ),
@@ -617,11 +650,14 @@ class _ProductFormState extends State<ProductForm> {
   @override
   Widget build(BuildContext context) {
 
+    /* When called, check if there is a Product was passed as argument */
+    this.product = ModalRoute.of(context).settings.arguments;
+
     return Scaffold(
 
       appBar: AppBar(
         title: Text(
-          (this.widget.product == null) ? "New product" : "Edit product",
+          (this.product == null) ? "New product" : "Edit product",
         ),
 
         actions: <Widget>[
@@ -632,7 +668,7 @@ class _ProductFormState extends State<ProductForm> {
               onPressed: () {
 
                 /* If no product was passed to form, validate emptyForm */
-                if (this.widget.product == null) {
+                if (this.product == null) {
                   if (this._emptyFormKey.currentState.validate()) {
                     Product newProduct = (this._selectedImage == null)
                         ? Product(
@@ -649,7 +685,14 @@ class _ProductFormState extends State<ProductForm> {
                       imageLocation: this._selectedImage.path,
                     );
 
-                    this.widget.bloc.onSubmit(newProduct);
+                    this.formBloc.onSubmit(newProduct);
+
+                    showAlertDialog(
+                      context,
+                        "Product created!",
+                        "The product has been added to the list.",
+                        () => Navigator.popUntil(context, ModalRoute.withName(ShoppingListScreen.routeName)),
+                    );
                   }
                 }
                 else {
@@ -661,7 +704,7 @@ class _ProductFormState extends State<ProductForm> {
                     if(this.quantityFieldController.value.text.isNotEmpty) {
 
                       setState(() {
-                        this.widget.product.quantity = int.parse(this.quantityFieldController.value.text);
+                        this.product.quantity = int.parse(this.quantityFieldController.value.text);
                       });
 
                       allEmpty = false;
@@ -670,7 +713,7 @@ class _ProductFormState extends State<ProductForm> {
                     if(this.unitPriceFieldController.value.text.isNotEmpty) {
 
                       setState(() {
-                        this.widget.product.unitPrice = double.parse(this.unitPriceFieldController.value.text);
+                        this.product.unitPrice = double.parse(this.unitPriceFieldController.value.text);
                       });
 
                       allEmpty = false;
@@ -680,7 +723,7 @@ class _ProductFormState extends State<ProductForm> {
 
                       setState(() {
 
-                        this.widget.product.observations = this.observationsFieldController.value.text;
+                        this.product.observations = this.observationsFieldController.value.text;
                       });
 
                       allEmpty = false;
@@ -688,13 +731,23 @@ class _ProductFormState extends State<ProductForm> {
 
                     if(!allEmpty) {
 
-                      this.widget.bloc.onSubmit(this.widget.product);
+                      this.formBloc.onSubmit(this.product);
 
-                      /* TODO ALERT*/
+                      showAlertDialog(
+                        context,
+                        "Product modified!",
+                        "The information regarding the product has been modified.",
+                            () => Navigator.popUntil(context, ModalRoute.withName(ShoppingListScreen.routeName)),
+                      );
                     }
                     else {
 
-                      /* TODO ALERT */
+                      showAlertDialog(
+                        context,
+                        "No information specified",
+                        "Please fill any of the form's fields in order to modify the product.",
+                            () => Navigator.pop(context),
+                      );
                     }
                   }
                 }
@@ -707,7 +760,7 @@ class _ProductFormState extends State<ProductForm> {
 
         color: Color.fromRGBO(58, 66, 86, 1.0),
 
-        child: (this.widget.product == null) ? emptyForm() : editForm(),
+        child: (this.product == null) ? emptyForm() : editForm(),
       ),
     );
   }
