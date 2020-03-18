@@ -299,10 +299,10 @@ class _ProductFormState extends State<ProductForm> {
 
   /* Returns form containing product's info */
   Form editForm() {
-
     final textStyle = TextStyle(
       color: Colors.white,
-      height: 1.2,
+      fontSize: 16,
+      height: 1.5,
       letterSpacing: 1.8,
     );
 
@@ -326,68 +326,101 @@ class _ProductFormState extends State<ProductForm> {
           Card(
             elevation: 8.0,
             color: Color.fromRGBO(64, 75, 96, 0.9),
-            margin:
-            EdgeInsets.symmetric(
+            margin: EdgeInsets.symmetric(
               horizontal: 10.0,
-              vertical: 6.0,
+              vertical: 8.0,
             ),
-            child: Container(
 
-              child: ListTile(
+            child: Column(
 
-                contentPadding: EdgeInsets.symmetric(
-                    horizontal: 20.0, vertical: 12.0),
+              children: <Widget>[
 
-                leading: Container(
-                  padding: EdgeInsets.only(right: 20.0),
-                  decoration: BoxDecoration(
-                    border: Border(
-                        right: BorderSide(
-                          width: 1.0,
-                          color: Colors.white24,
-                        )
-                    ),
-                  ),
+                /* Photo, name, quantity, unit price and total price */
+                Row(
 
-                  child: Container(
-                    width: 75.0,
-                    height: 75.0,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle, /* Makes image circular */
-                      image: DecorationImage(
-                        image: (this.widget.product.assetImage)
-                            ? AssetImage(this.widget.product.imageLocation)
-                            : FileImage(File(this.widget.product.imageLocation)),
-                        fit: BoxFit.fill, /* Fill area with image (no clipping) */
+                  children: <Widget>[
+
+                    Container(
+                      margin: EdgeInsets.only(
+                          left: 20.0, top: 20.0, bottom: 20.0),
+                      padding: EdgeInsets.only(right: 20.0),
+                      decoration: BoxDecoration(
+                        border: Border(
+                            right: BorderSide(
+                              width: 1.0,
+                              color: Colors.white24,
+                            )
+                        ),
+                      ),
+
+                      child: Container(
+                        width: 75.0,
+                        height: 75.0,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle, /* Makes image circular */
+                          image: DecorationImage(
+                            image: (this.widget.product.assetImage)
+                                ? AssetImage(
+                                this.widget.product.imageLocation)
+                                : FileImage(File(this.widget.product
+                                .imageLocation)),
+                            fit: BoxFit
+                                .fill, /* Fill area with image (no clipping) */
+                          ),
+                        ),
                       ),
                     ),
-                  ),
+
+                    Expanded(
+
+                      child: Container(
+
+                        margin: EdgeInsets.only(top: 10.0),
+
+                        child: Column(
+
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+
+                          children: <Widget>[
+
+                            Text(
+                              this.widget.product.name,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                height: 1.2,
+                                letterSpacing: 1.8,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+
+                            Text(
+                              "Quantity: ${this.widget.product.quantity}\n"
+                                  "Price: ${this.widget.product.totalPrice}€\n"
+                                  "Unit-Price: ${this.widget.product.unitPrice}\n",
+                              style: textStyle,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
 
-                title: Text(
-                  this.widget.product.name,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20,
-                    letterSpacing: 0.8,
-                  ),
+                /* Product's observations */
+                Container(
+                  margin: EdgeInsets.all(10.0),
+                  child: Text(
+                  "Observations: ${this.widget.product.observations}",
+                  style: textStyle,
+                )
                 ),
-
-                /* Subtitle text - Quantity and total price */
-                subtitle: Text(
-                  "Quantity: ${this.widget.product.quantity}\nPrice: ${this.widget
-                      .product.totalPrice}€",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 17,
-                    letterSpacing: 0.8,
-                  ),
-                ),
-              ),
+              ],
             ),
           ),
 
+          /* Form fields */
           Column(
 
             children: <Widget>[
@@ -396,7 +429,9 @@ class _ProductFormState extends State<ProductForm> {
               Row(
 
                 /* If there is no image selected, center the content, else space everything evenly */
-                mainAxisAlignment: (this._selectedImage == null) ? MainAxisAlignment.center : MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: (this._selectedImage == null)
+                    ? MainAxisAlignment.center
+                    : MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
 
                   (this._selectedImage != null)
@@ -409,7 +444,8 @@ class _ProductFormState extends State<ProductForm> {
                       shape: BoxShape.circle, /* Makes image circular */
                       image: DecorationImage(
                         image: FileImage(_selectedImage),
-                        fit: BoxFit.fill, /* Fill area with image (no clipping) */
+                        fit: BoxFit
+                            .fill, /* Fill area with image (no clipping) */
                       ),
                     ),
                   )
@@ -488,7 +524,8 @@ class _ProductFormState extends State<ProductForm> {
                       validator: (value) {
 
                         /* If field is not empty, check for double value */
-                        if (value.isNotEmpty && double.tryParse(value) == null) {
+                        if (value.isNotEmpty &&
+                            double.tryParse(value) == null) {
                           return "Please enter a numeric value.";
                         }
                         return null;
