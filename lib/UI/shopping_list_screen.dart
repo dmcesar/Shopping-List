@@ -1,38 +1,38 @@
 import 'package:flutter/material.dart';
+import 'package:mini_projeto/UI/product_form_screen.dart';
 
 import 'package:mini_projeto/data/product.dart';
 import 'package:mini_projeto/blocs/form_bloc.dart';
-import 'package:mini_projeto/blocs/list_bloc.dart';
+import 'package:mini_projeto/blocs/data_bloc.dart';
 import 'package:mini_projeto/UI/list_item.dart';
-import 'package:mini_projeto/UI/product_form_screen.dart';
 
 class ShoppingListScreen extends StatefulWidget {
 
-  ShoppingListScreen({Key key}) : super(key: key);
+  static const routeName = "/home";
+
+  final FormBloc formBloc;
+  final DataBloc dataBloc;
+
+  ShoppingListScreen({Key key, @required this.formBloc, @required this.dataBloc}) : super(key: key);
 
   @override
-  _ShoppingListScreenState createState() => _ShoppingListScreenState();
+  _ShoppingListScreenState createState() => _ShoppingListScreenState(formBloc, dataBloc);
 }
 
 class _ShoppingListScreenState extends State<ShoppingListScreen> {
 
+  FormBloc formBloc;
+  DataBloc dataBloc;
+
   /* List containing products on Widget */
   List<Product> products;
 
-  /* Business logic layer */
-  ListBloc _listBloc;
-  FormBloc _formBloc;
-
-  _ShoppingListScreenState() {
-
-    this._formBloc = FormBloc();
-
-    this._listBloc = ListBloc(this._formBloc.output);
+  _ShoppingListScreenState(this.formBloc, this.dataBloc) {
 
     this.products = [];
 
     /* Listen on any changes for the list */
-    this._listBloc.output.listen((onData) {
+    this.dataBloc.output.listen((onData) {
 
       setList(onData);
     });
@@ -64,19 +64,21 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
 
           itemCount: this.products.length,
           itemBuilder: (context, index) =>
-              ListItem(product: this.products[index], listBloc: this._listBloc, formBloc: this._formBloc),
+              ListItem(product: this.products[index], dataBloc: this.widget.dataBloc),
       ),
 
       floatingActionButton: FloatingActionButton(
 
-        onPressed: () =>
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ProductForm(bloc: this._formBloc),
-              ),
-            ),
-        child: Icon(Icons.add, color: Colors.white),
+        onPressed: () => Navigator.pushNamed(
+          context,
+          ProductFormScreen.routeName,
+        ),
+
+        child: Icon(
+            Icons.add,
+            color: Colors.white
+        ),
+
         backgroundColor: Colors.amber,
       ),
     );
@@ -85,8 +87,8 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
   @override
   void dispose() {
 
-    this._listBloc.dispose();
-    this._formBloc.dispose();
+    this.dataBloc.dispose();
+    this.formBloc.dispose();
     super.dispose();
   }
 }

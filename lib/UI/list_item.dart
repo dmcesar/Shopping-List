@@ -1,38 +1,39 @@
 import 'package:flutter/material.dart';
+import 'package:mini_projeto/UI/product_form_screen.dart';
 import 'dart:io';
 
-import 'package:mini_projeto/UI/product_form_screen.dart';
-import 'package:mini_projeto/blocs/form_bloc.dart';
-import 'package:mini_projeto/blocs/list_bloc.dart';
+import 'package:mini_projeto/blocs/data_bloc.dart';
 import 'package:mini_projeto/data/product.dart';
 
 class ListItem extends StatefulWidget {
 
   final Product product;
-  final ListBloc listBloc;
-  final FormBloc formBloc;
+  final DataBloc dataBloc;
 
-  ListItem( {Key key, this.product, this.listBloc, this.formBloc} ) : super(key: key);
+  ListItem( {Key key, @required this.product, @required this.dataBloc} ) : super(key: key);
 
   @override
-  _ListItemState createState()  => _ListItemState();
+  _ListItemState createState()  => _ListItemState(this.product, this.dataBloc);
 }
 
 class _ListItemState extends State<ListItem> {
+
+  Product product;
+  DataBloc dataBloc;
 
   var _color;
 
   static const tagged = Colors.amber,
       notTagged = Color.fromRGBO(64, 75, 96, 0.9);
 
-  _ListItemState() {
+  _ListItemState(this.product, this.dataBloc) {
 
     this._color = notTagged;
   }
 
   void toggleItemColor() {
 
-    this.widget.listBloc.onToggleProductState(this.widget.product);
+    this.dataBloc.onToggleProductState(this.widget.product);
 
     setState(() {
       this._color = this.widget.product.isTagged ? tagged : notTagged;
@@ -42,14 +43,14 @@ class _ListItemState extends State<ListItem> {
   void incrementItemQuantity() {
 
     setState(() {
-      this.widget.listBloc.onIncrementProductQuantity(this.widget.product);
+      this.dataBloc.onIncrementProductQuantity(this.widget.product);
     });
   }
 
   void decrementItemQuantity() {
 
     setState(() {
-      this.widget.listBloc.onDecrementProductQuantity(this.widget.product);
+      this.dataBloc.onDecrementProductQuantity(this.widget.product);
     });
   }
 
@@ -78,7 +79,7 @@ class _ListItemState extends State<ListItem> {
 
       onDismissed: (direction) {
 
-        this.widget.listBloc.onRemoveProduct(this.widget.product);
+        this.dataBloc.onRemoveProduct(this.widget.product);
       },
 
       /* Card wrapper - for slightly round corners and a shadow */
@@ -175,18 +176,11 @@ class _ListItemState extends State<ListItem> {
                 ],
               ),
 
-              onTap: () {
-                Navigator.push(
+              onTap: () => Navigator.pushNamed(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        ProductForm(
-                          product: this.widget.product,
-                          bloc: this.widget.formBloc,
-                        ),
-                  ),
-                );
-              },
+                  ProductFormScreen.routeName,
+                  arguments: this.product, /* Pass argument with routing */
+              ),
             )
         ),
       ),

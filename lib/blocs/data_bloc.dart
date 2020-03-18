@@ -3,14 +3,14 @@ import 'dart:async';
 import 'package:mini_projeto/data/datasource.dart';
 import 'package:mini_projeto/data/product.dart';
 
-class ListBloc {
+class DataBloc {
 
   /* Data access layer */
   DataSource _data;
 
   StreamController _controller;
 
-  ListBloc(Stream stream) {
+  DataBloc(Stream stream) {
 
     /* Get Singleton */
     this._data = DataSource.getInstance();
