@@ -31,6 +31,32 @@ class _ListItemState extends State<ListItem> {
     this._color = notTagged;
   }
 
+  showAlertDialog(BuildContext context) {
+
+    // set up the button
+    Widget okButton = FlatButton(
+      child: Text("OK"),
+      onPressed: () => Navigator.pop(context),
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Product removed!"),
+      content: Text("The selected product has been removed from the list."),
+      actions: [
+        okButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
   void toggleItemColor() {
 
     this.dataBloc.onToggleProductState(this.widget.product);
@@ -80,6 +106,7 @@ class _ListItemState extends State<ListItem> {
       onDismissed: (direction) {
 
         this.dataBloc.onRemoveProduct(this.widget.product);
+        showAlertDialog(context);
       },
 
       /* Card wrapper - for slightly round corners and a shadow */

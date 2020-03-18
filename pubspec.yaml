@@ -52,7 +52,7 @@ flutter:
     - lib/assets/Mango.jpg
     - lib/assets/Milk.jpg
     - lib/assets/Orange.jpg
-    - lib/assets/Steak.jpg
+    - lib/assets/Steak.jpg\
     - lib/assets/Water.jpg
     - lib/assets/noImage.jpg
 
