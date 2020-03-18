@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
+import 'dart:io';
 
 import 'package:mini_projeto/UI/product_form_screen.dart';
+import 'package:mini_projeto/blocs/form_bloc.dart';
 import 'package:mini_projeto/blocs/list_bloc.dart';
 import 'package:mini_projeto/data/product.dart';
 
 class ListItem extends StatefulWidget {
 
   final Product product;
-  final ListBloc bloc;
+  final ListBloc listBloc;
+  final FormBloc formBloc;
 
-  ListItem( {Key key, this.product, this.bloc} ) : super(key: key);
+  ListItem( {Key key, this.product, this.listBloc, this.formBloc} ) : super(key: key);
 
   @override
   _ListItemState createState()  => _ListItemState();
@@ -19,7 +22,7 @@ class _ListItemState extends State<ListItem> {
 
   var _color;
 
-  static const tagged = Colors.red,
+  static const tagged = Colors.amber,
       notTagged = Color.fromRGBO(64, 75, 96, 0.9);
 
   _ListItemState() {
@@ -29,7 +32,7 @@ class _ListItemState extends State<ListItem> {
 
   void toggleItemColor() {
 
-    this.widget.bloc.onToggleProductState(this.widget.product);
+    this.widget.listBloc.onToggleProductState(this.widget.product);
 
     setState(() {
       this._color = this.widget.product.isTagged ? tagged : notTagged;
@@ -39,14 +42,14 @@ class _ListItemState extends State<ListItem> {
   void incrementItemQuantity() {
 
     setState(() {
-      this.widget.bloc.onIncrementProductQuantity(this.widget.product);
+      this.widget.listBloc.onIncrementProductQuantity(this.widget.product);
     });
   }
 
   void decrementItemQuantity() {
 
     setState(() {
-      this.widget.bloc.onDecrementProductQuantity(this.widget.product);
+      this.widget.listBloc.onDecrementProductQuantity(this.widget.product);
     });
   }
 
@@ -59,7 +62,7 @@ class _ListItemState extends State<ListItem> {
       key: Key(this.widget.product.name),
 
       background: Container(color: Colors.red),
-      secondaryBackground: Container(color: Colors.green),
+      secondaryBackground: Container(color: (_color == tagged) ? notTagged : tagged),
 
       /* Only call onDismissed if swiped right */
       confirmDismiss: (direction) async {
@@ -75,7 +78,7 @@ class _ListItemState extends State<ListItem> {
 
       onDismissed: (direction) {
 
-        this.widget.bloc.onRemoveProduct(this.widget.product);
+        this.widget.listBloc.onRemoveProduct(this.widget.product);
       },
 
       /* Card wrapper - for slightly round corners and a shadow */
@@ -95,7 +98,8 @@ class _ListItemState extends State<ListItem> {
             /* List tile - Contains text and leading or trailing icon */
             child: ListTile(
               contentPadding: EdgeInsets.symmetric(
-                  horizontal: 20.0, vertical: 12.0),
+                  horizontal: 20.0, vertical: 12.0
+              ),
 
               /* Leading - Left arrow to tag/un-tag product */
               leading: Container(
@@ -108,11 +112,18 @@ class _ListItemState extends State<ListItem> {
                       )
                   ),
                 ),
-                child: Image.asset(
-                  this.widget.product.imageLocation,
-                  width: 70,
-                  height: 70,
-                  fit: BoxFit.fill,
+                child: Container(
+                  width: 75.0,
+                  height: 75.0,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle, /* Makes image circular */
+                    image: DecorationImage(
+                      image: (this.widget.product.assetImage)
+                      ? AssetImage(this.widget.product.imageLocation)
+                      : FileImage(File(this.widget.product.imageLocation)),
+                      fit: BoxFit.fill, /* Fill area with image (no clipping) */
+                    ),
+                  ),
                 ),
               ),
 
@@ -171,6 +182,7 @@ class _ListItemState extends State<ListItem> {
                     builder: (context) =>
                         ProductForm(
                           product: this.widget.product,
+                          bloc: this.widget.formBloc,
                         ),
                   ),
                 );

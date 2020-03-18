@@ -20,7 +20,7 @@ class ProductForm extends StatefulWidget {
 
 class _ProductFormState extends State<ProductForm> {
 
-  final _formKey = GlobalKey<FormState>();
+  final _emptyFormKey = GlobalKey<FormState>(), _editFormKey = GlobalKey<FormState>();
 
   /* Create a text controller and use it to retrieve the current value of the TextField */
   TextEditingController nameFieldController, quantityFieldController, unitPriceFieldController, observationsFieldController;
@@ -65,7 +65,7 @@ class _ProductFormState extends State<ProductForm> {
 
     return Form(
 
-      key: _formKey,
+      key: _emptyFormKey,
 
       child: ListView(
 
@@ -78,15 +78,23 @@ class _ProductFormState extends State<ProductForm> {
               /* Image and image selection field */
               Row(
 
+                /* If there is no image selected, center the content, else space everything evenly */
                 mainAxisAlignment: (this._selectedImage == null) ? MainAxisAlignment.center : MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
 
                   (this._selectedImage != null)
 
                   /* Display an image if one has been selected */
-                      ? CircleAvatar(
-                    radius: 40,
-                    backgroundImage: AssetImage(_selectedImage.path),
+                      ? Container(
+                    width: 75.0,
+                    height: 75.0,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle, /* Makes image circular */
+                      image: DecorationImage(
+                          image: FileImage(_selectedImage),
+                          fit: BoxFit.fill, /* Fill area with image (no clipping) */
+                      ),
+                    ),
                   )
 
                   /* Else return empty container */
@@ -110,7 +118,7 @@ class _ProductFormState extends State<ProductForm> {
                           icon: Icon(
                             Icons.add_circle,
                             color: Colors.amber,
-                            size: 40.0,
+                            size: 50.0,
                           ),
                           onPressed: () => this.getImage(),
                         ),
@@ -239,8 +247,8 @@ class _ProductFormState extends State<ProductForm> {
                       controller: quantityFieldController,
 
                       validator: (value) {
-                        if (value.isEmpty || double.tryParse(value) == null) {
-                          return "Please enter a numeric value.";
+                        if (value.isEmpty || int.tryParse(value) == null) {
+                          return "Please enter a descrite numeric value.";
                         }
                         return null;
                       },
@@ -290,7 +298,284 @@ class _ProductFormState extends State<ProductForm> {
   }
 
   /* Returns form containing product's info */
-  Form editForm() {}
+  Form editForm() {
+
+    final textStyle = TextStyle(
+      color: Colors.white,
+      height: 1.2,
+      letterSpacing: 1.8,
+    );
+
+    final border = OutlineInputBorder(
+      borderRadius: BorderRadius.circular(25),
+
+      borderSide: BorderSide(
+        color: Colors.white,
+      ),
+    );
+
+    return Form(
+
+      key: _editFormKey,
+
+      child: ListView(
+
+        children: <Widget>[
+
+          /* Product Info */
+          Card(
+            elevation: 8.0,
+            color: Color.fromRGBO(64, 75, 96, 0.9),
+            margin:
+            EdgeInsets.symmetric(
+              horizontal: 10.0,
+              vertical: 6.0,
+            ),
+            child: Container(
+
+              child: ListTile(
+
+                contentPadding: EdgeInsets.symmetric(
+                    horizontal: 20.0, vertical: 12.0),
+
+                leading: Container(
+                  padding: EdgeInsets.only(right: 20.0),
+                  decoration: BoxDecoration(
+                    border: Border(
+                        right: BorderSide(
+                          width: 1.0,
+                          color: Colors.white24,
+                        )
+                    ),
+                  ),
+
+                  child: Container(
+                    width: 75.0,
+                    height: 75.0,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle, /* Makes image circular */
+                      image: DecorationImage(
+                        image: (this.widget.product.assetImage)
+                            ? AssetImage(this.widget.product.imageLocation)
+                            : FileImage(File(this.widget.product.imageLocation)),
+                        fit: BoxFit.fill, /* Fill area with image (no clipping) */
+                      ),
+                    ),
+                  ),
+                ),
+
+                title: Text(
+                  this.widget.product.name,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                    letterSpacing: 0.8,
+                  ),
+                ),
+
+                /* Subtitle text - Quantity and total price */
+                subtitle: Text(
+                  "Quantity: ${this.widget.product.quantity}\nPrice: ${this.widget
+                      .product.totalPrice}€",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 17,
+                    letterSpacing: 0.8,
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          Column(
+
+            children: <Widget>[
+
+              /* Image and image selection field */
+              Row(
+
+                /* If there is no image selected, center the content, else space everything evenly */
+                mainAxisAlignment: (this._selectedImage == null) ? MainAxisAlignment.center : MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+
+                  (this._selectedImage != null)
+
+                  /* Display an image if one has been selected */
+                      ? Container(
+                    width: 75.0,
+                    height: 75.0,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle, /* Makes image circular */
+                      image: DecorationImage(
+                        image: FileImage(_selectedImage),
+                        fit: BoxFit.fill, /* Fill area with image (no clipping) */
+                      ),
+                    ),
+                  )
+
+                  /* Else return empty container */
+                      : Container(),
+
+                  /* Button to select image and some text */
+                  Container(
+                    width: 200.0,
+                    height: 125.0,
+                    child:
+                    Column(
+
+                      /* Space components along container's height */
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+
+                      /* Stretch components along container's width */
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: <Widget>[
+
+                        IconButton(
+                          icon: Icon(
+                            Icons.add_circle,
+                            color: Colors.amber,
+                            size: 50.0,
+                          ),
+                          onPressed: () => this.getImage(),
+                        ),
+
+                        Text(
+                          "Click the icon above to select an image.",
+                          style: textStyle,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+
+              /* Product quantity and unit-price fields */
+              Row(
+
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+
+                  Container(
+
+                    width: 150.0,
+
+                    margin: EdgeInsets.only(top: 30.0),
+
+                    /* Unit Price field */
+                    child: TextFormField(
+
+                      style: textStyle,
+                      cursorColor: Colors.amber,
+                      maxLength: 3,
+                      maxLines: 1,
+
+                      decoration: InputDecoration(
+
+                        labelText: "Unit Price (€)",
+                        labelStyle: textStyle,
+                        hintText: "Ex: 6",
+                        hintStyle: textStyle,
+                        counterStyle: textStyle,
+
+                        focusedBorder: border,
+                        enabledBorder: border,
+                        border: border,
+                      ),
+
+                      controller: unitPriceFieldController,
+
+                      validator: (value) {
+
+                        /* If field is not empty, check for double value */
+                        if (value.isNotEmpty && double.tryParse(value) == null) {
+                          return "Please enter a numeric value.";
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+
+                  Container(
+
+                    width: 150.0,
+                    margin: EdgeInsets.only(top: 30.0),
+
+                    /* Quantity field */
+                    child: TextFormField(
+
+                      style: textStyle,
+                      cursorColor: Colors.amber,
+                      maxLength: 3,
+                      maxLines: 1,
+
+                      decoration: InputDecoration(
+
+                        labelText: "Quantity",
+                        labelStyle: textStyle,
+                        hintText: "Ex: 3",
+                        hintStyle: textStyle,
+                        counterStyle: textStyle,
+
+                        focusedBorder: border,
+                        enabledBorder: border,
+                        border: border,
+                      ),
+
+                      controller: quantityFieldController,
+
+                      validator: (value) {
+
+                        /* If field is not empty, check for double value */
+                        if (value.isNotEmpty && int.tryParse(value) == null) {
+                          return "Please enter a descrite numeric value.";
+                        }
+                        return null;
+                      },
+                    ),
+
+                  ),
+                ],
+              ),
+
+              /* Product observations field */
+              Container(
+
+                margin: EdgeInsets.only(top: 30.0),
+
+                width: 325.0,
+
+                /* Observations field */
+                child: TextFormField(
+
+                  style: textStyle,
+                  cursorColor: Colors.amber,
+                  maxLength: 25,
+                  maxLines: 3,
+
+                  keyboardType: TextInputType.multiline,
+
+                  decoration: InputDecoration(
+                    labelText: "Observations (Optional)",
+                    labelStyle: textStyle,
+                    hintText: "Ex: Must check validation date",
+                    hintStyle: textStyle,
+                    counterStyle: textStyle,
+
+                    focusedBorder: border,
+                    enabledBorder: border,
+                    border: border,
+                  ),
+
+                  controller: observationsFieldController,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -299,7 +584,7 @@ class _ProductFormState extends State<ProductForm> {
 
       appBar: AppBar(
         title: Text(
-          (this.widget.product == null) ? "New product" : this.widget.product.name,
+          (this.widget.product == null) ? "New product" : "Edit product",
         ),
 
         actions: <Widget>[
@@ -309,18 +594,17 @@ class _ProductFormState extends State<ProductForm> {
               icon: const Icon(Icons.save),
               onPressed: () {
 
-                if(this._formKey.currentState.validate()) {
-
-                  if(this.widget.product == null) {
-
+                /* If no product was passed to form, validate emptyForm */
+                if (this.widget.product == null) {
+                  if (this._emptyFormKey.currentState.validate()) {
                     Product newProduct = (this._selectedImage == null)
-                    ? Product(
+                        ? Product(
                       this.nameFieldController.value.text,
                       int.parse(this.quantityFieldController.value.text),
                       double.parse(this.unitPriceFieldController.value.text),
                       observations: this.observationsFieldController.value.text,
                     )
-                    : Product(
+                        : Product(
                       this.nameFieldController.value.text,
                       int.parse(this.quantityFieldController.value.text),
                       double.parse(this.unitPriceFieldController.value.text),
@@ -329,6 +613,52 @@ class _ProductFormState extends State<ProductForm> {
                     );
 
                     this.widget.bloc.onSubmit(newProduct);
+                  }
+                }
+                else {
+
+                  if(this._editFormKey.currentState.validate()) {
+
+                    bool allEmpty = true;
+
+                    if(this.quantityFieldController.value.text.isNotEmpty) {
+
+                      setState(() {
+                        this.widget.product.quantity = int.parse(this.quantityFieldController.value.text);
+                      });
+
+                      allEmpty = false;
+                    }
+
+                    if(this.unitPriceFieldController.value.text.isNotEmpty) {
+
+                      setState(() {
+                        this.widget.product.unitPrice = double.parse(this.unitPriceFieldController.value.text);
+                      });
+
+                      allEmpty = false;
+                    }
+
+                    if(this.observationsFieldController.value.text.isNotEmpty) {
+
+                      setState(() {
+
+                        this.widget.product.observations = this.observationsFieldController.value.text;
+                      });
+
+                      allEmpty = false;
+                    }
+
+                    if(!allEmpty) {
+
+                      this.widget.bloc.onSubmit(this.widget.product);
+
+                      /* TODO ALERT*/
+                    }
+                    else {
+
+                      /* TODO ALERT */
+                    }
                   }
                 }
               }

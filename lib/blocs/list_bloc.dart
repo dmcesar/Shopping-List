@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:mini_projeto/data/datasource.dart';
+import 'package:mini_projeto/data/product.dart';
 
 class ListBloc {
 
@@ -21,7 +22,7 @@ class ListBloc {
     _getProducts();
 
     /* Listens to form bloc's stream on any new product to be added */
-    stream.listen((data) => this.onAddProduct(data));
+    stream.listen((data) => this.onAddOrModify(data));
   }
 
   Stream get output => _controller.stream;
@@ -31,15 +32,19 @@ class ListBloc {
   /* Fetch products list from repository and adds it to sink */
   void _getProducts() => this._controller.add(this._data.getAll());
 
-  void onAddProduct(product) {
+  /* Modifies product if already exists in memory or adds it to data */
+  void onAddOrModify(Product product) {
 
-    /* Add data to repository */
-    this._data.addProduct(product);
+    if(this._data.getProduct(product.name) != null) {
+
+      this._data.modifyProduct(product);
+
+    } else this._data.addProduct(product);
 
     _getProducts();
   }
 
-  void onRemoveProduct(product) {
+  void onRemoveProduct(Product product) {
 
     /* Remove data from repository */
     this._data.removeProduct(product);
@@ -48,28 +53,49 @@ class ListBloc {
     _getProducts();
   }
 
-  void onIncrementProductQuantity(product) {
+  void onIncrementProductQuantity(Product product) {
 
-    /* Change data attribute in repository */
-    this._data.incrementProductQuantity(product);
+    /* Fetches product from repository */
+    Product toModify = this._data.getProduct(product.name);
 
-    /* Re-writes list to sink */
-    _getProducts();
-  }
+    /* Increments quantity */
+    toModify.quantity++;
 
-  void onDecrementProductQuantity(product) {
-
-    /* Change data attribute in repository */
-    this._data.decrementProductQuantity(product);
+    /* Modifies data */
+    this._data.modifyProduct(toModify);
 
     /* Re-writes list to sink */
     _getProducts();
   }
 
-  void onToggleProductState(product) {
+  void onDecrementProductQuantity(Product product) {
 
-    /* Change data attribute in repository */
-    this._data.toggleProductState(product);
+    /* Fetches product from repository */
+    Product toModify = this._data.getProduct(product.name);
+
+    if(toModify.quantity > 0) {
+
+      /* Decrements quantity */
+      toModify.quantity--;
+
+      /* Modifies data */
+      this._data.modifyProduct(toModify);
+
+      /* Re-writes list to sink */
+      _getProducts();
+    }
+  }
+
+  void onToggleProductState(Product product) {
+
+    /* Fetches product from repository */
+    Product toModify = this._data.getProduct(product.name);
+
+    /* Toggles status */
+    toModify.isTagged = !toModify.isTagged;
+
+    /* Modifies data */
+    this._data.modifyProduct(toModify);
 
     /* Re-writes list to sink */
     _getProducts();

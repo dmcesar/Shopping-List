@@ -39,10 +39,16 @@ class Product {
   bool get isTagged => this._isTagged;
   set isTagged(bool) => this._isTagged = bool;
 
-  Product(this._name, this._quantity, this._unitPrice, {String imageLocation = "lib/assets/noImage.jpg", String observations = ""}) {
+  bool _assetImage;
+  bool get assetImage => this._assetImage;
+
+  Product(this._name, this._quantity, this._unitPrice, {String imageLocation = "lib/assets/noImage.jpg", String observations = "", bool assetImage = false}) {
+
+    if(imageLocation == "lib/assets/noImage.jpg") { this._assetImage = true;}
 
     this._imageLocation = imageLocation;
     this._observations = observations;
+    this._assetImage = assetImage;
 
     this._totalPrice = this._unitPrice * this._quantity;
 
@@ -50,11 +56,11 @@ class Product {
   }
 
   /* Returns List of default product */
-  static List<Product> init() {
+  static Map<String, Product> init() {
 
-    const productNames = ["Water", "Steak", "Milk", "Mango", "Orange", "Banana", "Cookie", "Beer"];
-
-    return List.generate(
+    const productNames = ["Banana", "Beer", "Cookie", "Mango", "Milk", "Orange", "Steak", "Water"];
+    
+    List<Product> products = List.generate(
           productNames.length,
               (index) =>
               Product(
@@ -62,8 +68,17 @@ class Product {
                 index * 2 + 1,
                 (productNames.length * 2 - (index + 8)).toDouble(),
                 imageLocation: 'lib/assets/${productNames[index]}.jpg',
+                observations: "This is a default product. Feel free to delete it!",
+                assetImage: true,
               )
       );
+
+    /* Returns a Map in the format <product._name, product> */
+    return Map.fromIterable(
+        products,
+        key: (item) => (item as Product).name,
+        value: (item) => item
+    );
   }
 
   @override

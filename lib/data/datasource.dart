@@ -4,7 +4,7 @@ import 'package:mini_projeto/data/product.dart';
 
 class DataSource {
 
-  final List<Product> _datasource;
+  final Map<String, Product> _datasource;
 
   static DataSource _instance;
 
@@ -23,66 +23,50 @@ class DataSource {
 
   /* Data "setters" */
 
-  /* Adds product to list */
-  void addProduct(product) {
+  /* Adds product to data */
+  void addProduct(Product product) {
 
-    this._datasource.add(product);
+    this._datasource.putIfAbsent(product.name, () => product);
 
     print("Added $product");
   }
 
+  /* Replaces existing product with updated data */
+  void modifyProduct(Product product) {
+
+    this._datasource[product.name] = product;
+
+    print("Modified $product");
+  }
+
   /* Removes product from list */
-  void removeProduct(product) {
+  void removeProduct(Product product) {
 
     this._datasource.remove(product);
 
     print("Removed: $product");
   }
 
-  void incrementProductQuantity(product) {
+  /* Data getters */
 
-    for(var p in this._datasource) {
+  /* Returns all entries in form List<value> */
+  List<Product> getAll() {
 
-      if(p == product) {
+    List<Product> products = List();
 
-        p.quantity++;
+    this._datasource.forEach((k, v) => products.add(v));
 
-        print("Incremented quantity: $product");
-      }
-    }
+    return products;
   }
 
-  void decrementProductQuantity(product) {
+  /* Returns product with existing key or null */
+  Product getProduct(String key) {
 
-    for(var p in this._datasource) {
+    if(this._datasource.containsKey(key)) {
 
-      if(p == product) {
-
-        if(p.quantity > 0) {
-
-          p.quantity--;
-
-          print("Decremented quantity: $product");
-        }
-      }
+      return this._datasource[key];
     }
+
+    return null;
   }
-
-  void toggleProductState(product) {
-
-    for(var p in this._datasource) {
-
-      if(p == product) {
-
-        p.isTagged = !p.isTagged;
-
-        print("Toggled state: $product");
-      }
-    }
-  }
-
-  /* Data "getters" */
-
-  /* Returns all product in List form */
-  List<Product> getAll() => this._datasource;
 }

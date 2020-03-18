@@ -34,8 +34,6 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
     /* Listen on any changes for the list */
     this._listBloc.output.listen((onData) {
 
-      print(onData.runtimeType);
-
       setList(onData);
     });
   }
@@ -47,6 +45,8 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
 
       this.products = list;
     });
+
+    print("Updated List UI");
   }
 
   @override
@@ -64,7 +64,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
 
           itemCount: this.products.length,
           itemBuilder: (context, index) =>
-              ListItem(product: this.products[index], bloc: this._listBloc)
+              ListItem(product: this.products[index], listBloc: this._listBloc, formBloc: this._formBloc),
       ),
 
       floatingActionButton: FloatingActionButton(
@@ -77,7 +77,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
               ),
             ),
         child: Icon(Icons.add, color: Colors.white),
-        backgroundColor: Colors.orange,
+        backgroundColor: Colors.amber,
       ),
     );
   }
