@@ -101,13 +101,18 @@ class _ListItemState extends State<ListItem> {
           return false;
         }
 
+        if(this._color == tagged) {
+
+          toggleItemColor();
+        }
+
         return true;
       },
 
       onDismissed: (direction) {
 
         this.widget.dataBloc.onRemoveProduct(this.widget.product.name);
-        showAlertDialog(this.widget.context);
+        showAlertDialog(this.widget.context); /* Same context as ShoppingListScreen */
       },
 
       /* Card wrapper - for slightly round corners and a shadow */
