@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mini_projeto/UI/product_form_screen.dart';
 
@@ -37,6 +38,15 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
       setList(onData);
     });
   }
+  
+  double getCheckoutPrice() {
+    
+    double toReturn = 0.0;
+    
+    this.products.forEach((p) => toReturn += p.totalPrice);
+
+    return toReturn;
+  }
 
   /* Re-writes products list to update UI */
   void setList(List<Product> list) {
@@ -51,6 +61,11 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final textStyle = TextStyle(
+      color: Colors.white,
+      height: 1.2,
+      letterSpacing: 1.8,
+    );
 
     return Scaffold(
 
@@ -60,19 +75,66 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
 
       backgroundColor: Color.fromRGBO(58, 66, 86, 1.0),
 
-      body: ListView.builder(
+      body: Column(
 
-          itemCount: this.products.length,
-          itemBuilder: (context, index) =>
-              ListItem(product: this.products[index], dataBloc: this.widget.dataBloc),
+        children: <Widget>[
+
+          Card(
+
+            elevation: 8.0,
+            margin:
+            EdgeInsets.symmetric(
+              horizontal: 10.0,
+              vertical: 6.0,
+            ),
+
+            child: Container(
+
+              decoration: BoxDecoration(
+                color: Color.fromRGBO(64, 75, 96, 0.9),
+              ),
+
+              height: 50.0,
+
+              child: Row(
+
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+
+                  Text(
+                      "Nº products : ${this.products.length}",
+                      style: textStyle
+                  ),
+
+                  Text(
+                    "Total price: ${this.getCheckoutPrice()}€",
+                    style: textStyle,
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          Expanded(
+
+            child: ListView.builder(
+
+              itemCount: this.products.length,
+              itemBuilder: (context, index) =>
+                  ListItem(product: this.products[index],
+                      dataBloc: this.widget.dataBloc),
+            ),
+          )
+        ],
       ),
 
       floatingActionButton: FloatingActionButton(
 
-        onPressed: () => Navigator.pushNamed(
-          context,
-          ProductFormScreen.routeName,
-        ),
+        onPressed: () =>
+            Navigator.pushNamed(
+              context,
+              ProductFormScreen.routeName,
+            ),
 
         child: Icon(
             Icons.add,
