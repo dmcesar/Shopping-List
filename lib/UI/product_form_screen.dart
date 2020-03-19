@@ -16,13 +16,11 @@ class ProductFormScreen extends StatefulWidget {
   ProductFormScreen({Key key, @required this.formBloc}) : super(key: key);
 
   @override
-  _ProductFormScreenState createState() => _ProductFormScreenState(this.formBloc);
+  _ProductFormScreenState createState() => _ProductFormScreenState();
 }
 
 class _ProductFormScreenState extends State<ProductFormScreen> {
 
-  /* Request handler */
-  FormBloc formBloc;
   Product product;
 
   /* Keys to validate each form */
@@ -33,14 +31,6 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
 
   /* File containing product's image */
   File _selectedImage;
-
-  _ProductFormScreenState(this.formBloc) {
-
-    this.nameFieldController = TextEditingController();
-    this.quantityFieldController = TextEditingController();
-    this.unitPriceFieldController = TextEditingController();
-    this.observationsFieldController = TextEditingController();
-  }
 
   showAlertDialog(BuildContext context, String title, String message, Function onPressed) {
 
@@ -647,6 +637,17 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
   }
 
   @override
+  void initState() {
+
+    super.initState();
+
+    this.nameFieldController = TextEditingController();
+    this.quantityFieldController = TextEditingController();
+    this.unitPriceFieldController = TextEditingController();
+    this.observationsFieldController = TextEditingController();
+  }
+
+  @override
   Widget build(BuildContext context) {
 
     /* When called, check if there is a Product was passed as argument */
@@ -684,7 +685,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
                       imageLocation: this._selectedImage.path,
                     );
 
-                    this.formBloc.onSubmit(newProduct);
+                    this.widget.formBloc.onSubmit(newProduct);
 
                     showAlertDialog(
                       context,
@@ -730,7 +731,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
 
                     if(!allEmpty) {
 
-                      this.formBloc.onSubmit(this.product);
+                      this.widget.formBloc.onSubmit(this.product);
 
                       showAlertDialog(
                         context,

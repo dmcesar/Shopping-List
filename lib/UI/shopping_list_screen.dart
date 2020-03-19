@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:sensors/sensors.dart';
 
@@ -18,25 +16,26 @@ class ShoppingListScreen extends StatefulWidget {
   ShoppingListScreen({Key key, @required this.dataBloc}) : super(key: key);
 
   @override
-  _ShoppingListScreenState createState() => _ShoppingListScreenState(dataBloc);
+  _ShoppingListScreenState createState() => _ShoppingListScreenState();
 }
 
 class _ShoppingListScreenState extends State<ShoppingListScreen> {
-
-  DataBloc dataBloc;
 
   /* List containing products on Widget */
   List<Product> products;
 
   bool popupActive;
 
-  _ShoppingListScreenState(this.dataBloc) {
+  @override
+  void initState() {
+
+    super.initState();
 
     this.products = [];
     this.popupActive = false;
 
     /* Listen on any changes for the list from DataBloc */
-    this.dataBloc.output.listen((onData) {
+    this.widget.dataBloc.output.listen((onData) {
 
       updateList(onData);
     });
@@ -68,7 +67,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
       child: Text("Continue"),
       onPressed:  () {
 
-        this.dataBloc.onClearList();
+        this.widget.dataBloc.onClearList();
 
         this.popupActive = false;
 
@@ -108,11 +107,6 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final textStyle = TextStyle(
-      color: Colors.white,
-      height: 1.2,
-      letterSpacing: 1.8,
-    );
 
     return Scaffold(
 
@@ -139,6 +133,8 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
 
               decoration: BoxDecoration(
                 color: Color.fromRGBO(64, 75, 96, 0.9),
+                border: Border.all(color: Colors.amber, width: 1.0),
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
               ),
 
               height: 50.0,
@@ -149,13 +145,21 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
                 children: <Widget>[
 
                   Text(
-                      "Nº products : ${this.dataBloc.getTotalProducts()}",
-                      style: textStyle
+                      "Nº products : ${this.widget.dataBloc.getTotalProducts()}",
+                      style: TextStyle(
+                        color: Colors.white,
+                        height: 1.2,
+                        letterSpacing: 1.8,
+                      ),
                   ),
 
                   Text(
-                    "Total price: ${this.dataBloc.getCheckoutPrice()}€",
-                    style: textStyle,
+                    "Total price: ${this.widget.dataBloc.getCheckoutPrice()}€",
+                    style: TextStyle(
+                      color: Colors.white,
+                      height: 1.2,
+                      letterSpacing: 1.8,
+                    ),
                   ),
                 ],
               ),
@@ -168,8 +172,11 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
 
               itemCount: this.products.length,
               itemBuilder: (context, index) =>
-                  ListItem(product: this.products[index],
-                      dataBloc: this.widget.dataBloc),
+                  ListItem(
+                      context: this.context,
+                      product: this.products[index],
+                      dataBloc: this.widget.dataBloc
+                  ),
             ),
           )
         ],
@@ -196,7 +203,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
   @override
   void dispose() {
 
-    this.dataBloc.dispose();
+    this.widget.dataBloc.dispose();
     super.dispose();
   }
 }

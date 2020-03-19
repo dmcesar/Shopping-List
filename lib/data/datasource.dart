@@ -43,11 +43,11 @@ class DataSource {
   }
 
   /* Removes product from list */
-  void removeProduct(Product product) {
+  void removeProduct(String key) {
 
-    this._datasource.remove(product.name);
+    this._datasource.remove(key);
 
-    print("Removed: $product");
+    print("Removed: $key");
   }
 
   /* Data getters */

@@ -7,26 +7,27 @@ import 'package:mini_projeto/data/product.dart';
 
 class ListItem extends StatefulWidget {
 
+  final BuildContext context;
   final Product product;
   final DataBloc dataBloc;
 
-  ListItem( {Key key, @required this.product, @required this.dataBloc} ) : super(key: key);
+  ListItem( {Key key, @required this.context, @required this.product, @required this.dataBloc} ) : super(key: key);
 
   @override
-  _ListItemState createState()  => _ListItemState(this.product, this.dataBloc);
+  _ListItemState createState()  => _ListItemState();
 }
 
 class _ListItemState extends State<ListItem> {
-
-  Product product;
-  DataBloc dataBloc;
 
   Color _color;
 
   static const tagged = Colors.amber,
       notTagged = Color.fromRGBO(64, 75, 96, 0.9);
 
-  _ListItemState(this.product, this.dataBloc) {
+  @override
+  void initState() {
+
+    super.initState();
 
     this._color = notTagged;
   }
@@ -59,24 +60,24 @@ class _ListItemState extends State<ListItem> {
 
   void toggleItemColor() {
 
-    this.dataBloc.onToggleProductState(this.product);
+    this.widget.dataBloc.onToggleProductState(this.widget.product.name);
 
     setState(() {
-      this._color = this.product.isTagged ? tagged : notTagged;
+      this._color = this.widget.product.isTagged ? tagged : notTagged;
     });
   }
 
   void incrementItemQuantity() {
 
     setState(() {
-      this.dataBloc.onIncrementProductQuantity(this.product);
+      this.widget.dataBloc.onIncrementProductQuantity(this.widget.product.name);
     });
   }
 
   void decrementItemQuantity() {
 
     setState(() {
-      this.dataBloc.onDecrementProductQuantity(this.product);
+      this.widget.dataBloc.onDecrementProductQuantity(this.widget.product.name);
     });
   }
 
@@ -86,7 +87,7 @@ class _ListItemState extends State<ListItem> {
     /*Handles item swiping */
     return Dismissible(
 
-      key: Key(this.product.name),
+      key: Key(this.widget.product.name),
 
       background: Container(color: Colors.red),
       secondaryBackground: Container(color: (this._color == tagged) ? notTagged : tagged),
@@ -105,8 +106,8 @@ class _ListItemState extends State<ListItem> {
 
       onDismissed: (direction) {
 
-        this.dataBloc.onRemoveProduct(this.product);
-        showAlertDialog(context);
+        this.widget.dataBloc.onRemoveProduct(this.widget.product.name);
+        showAlertDialog(this.widget.context);
       },
 
       /* Card wrapper - for slightly round corners and a shadow */
@@ -146,9 +147,9 @@ class _ListItemState extends State<ListItem> {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle, /* Makes image circular */
                     image: DecorationImage(
-                      image: (this.product.assetImage)
-                      ? AssetImage(this.product.imageLocation)
-                      : FileImage(File(this.product.imageLocation)),
+                      image: (this.widget.product.assetImage)
+                      ? AssetImage(this.widget.product.imageLocation)
+                      : FileImage(File(this.widget.product.imageLocation)),
                       fit: BoxFit.fill, /* Fill area with image (no clipping) */
                     ),
                   ),
@@ -157,7 +158,7 @@ class _ListItemState extends State<ListItem> {
 
               /* Main text - Product name*/
               title: Text(
-                this.product.name,
+                this.widget.product.name,
                 style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
@@ -168,7 +169,7 @@ class _ListItemState extends State<ListItem> {
 
               /* Subtitle text - Quantity and total price */
               subtitle: Text(
-                "Quantity: ${this.product.quantity}\nPrice: ${this.product.totalPrice}€",
+                "Quantity: ${this.widget.product.quantity}\nPrice: ${this.widget.product.totalPrice}€",
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 17,
@@ -205,7 +206,7 @@ class _ListItemState extends State<ListItem> {
               onTap: () => Navigator.pushNamed(
                   context,
                   ProductFormScreen.routeName,
-                  arguments: this.product, /* Pass argument with routing */
+                  arguments: this.widget.product, /* Pass argument with routing */
               ),
             )
         ),

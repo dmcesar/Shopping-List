@@ -72,19 +72,19 @@ class DataBloc {
     _getProducts();
   }
 
-  void onRemoveProduct(Product product) {
+  void onRemoveProduct(String productName) {
 
     /* Remove data from repository */
-    this._data.removeProduct(product);
+    this._data.removeProduct(productName);
 
     /* Re-writes list to sink */
     _getProducts();
   }
 
-  void onIncrementProductQuantity(Product product) {
+  void onIncrementProductQuantity(String productName) {
 
     /* Fetches product from repository */
-    Product toModify = this._data.getProduct(product.name);
+    Product toModify = this._data.getProduct(productName);
 
     /* Increments quantity */
     toModify.quantity++;
@@ -96,10 +96,10 @@ class DataBloc {
     _getProducts();
   }
 
-  void onDecrementProductQuantity(Product product) {
+  void onDecrementProductQuantity(String productName) {
 
     /* Fetches product from repository */
-    Product toModify = this._data.getProduct(product.name);
+    Product toModify = this._data.getProduct(productName);
 
     if (toModify.quantity > 0) {
 
@@ -114,10 +114,10 @@ class DataBloc {
     }
   }
 
-  void onToggleProductState(Product product) {
+  void onToggleProductState(String productName) {
 
     /* Fetches product from repository */
-    Product toModify = this._data.getProduct(product.name);
+    Product toModify = this._data.getProduct(productName);
 
     /* Toggles status */
     toModify.isTagged = !toModify.isTagged;
