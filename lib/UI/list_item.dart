@@ -21,7 +21,7 @@ class _ListItemState extends State<ListItem> {
   Product product;
   DataBloc dataBloc;
 
-  var _color;
+  Color _color;
 
   static const tagged = Colors.amber,
       notTagged = Color.fromRGBO(64, 75, 96, 0.9);
@@ -59,24 +59,24 @@ class _ListItemState extends State<ListItem> {
 
   void toggleItemColor() {
 
-    this.dataBloc.onToggleProductState(this.widget.product);
+    this.dataBloc.onToggleProductState(this.product);
 
     setState(() {
-      this._color = this.widget.product.isTagged ? tagged : notTagged;
+      this._color = this.product.isTagged ? tagged : notTagged;
     });
   }
 
   void incrementItemQuantity() {
 
     setState(() {
-      this.dataBloc.onIncrementProductQuantity(this.widget.product);
+      this.dataBloc.onIncrementProductQuantity(this.product);
     });
   }
 
   void decrementItemQuantity() {
 
     setState(() {
-      this.dataBloc.onDecrementProductQuantity(this.widget.product);
+      this.dataBloc.onDecrementProductQuantity(this.product);
     });
   }
 
@@ -86,10 +86,10 @@ class _ListItemState extends State<ListItem> {
     /*Handles item swiping */
     return Dismissible(
 
-      key: Key(this.widget.product.name),
+      key: Key(this.product.name),
 
       background: Container(color: Colors.red),
-      secondaryBackground: Container(color: (_color == tagged) ? notTagged : tagged),
+      secondaryBackground: Container(color: (this._color == tagged) ? notTagged : tagged),
 
       /* Only call onDismissed if swiped right */
       confirmDismiss: (direction) async {
@@ -105,7 +105,7 @@ class _ListItemState extends State<ListItem> {
 
       onDismissed: (direction) {
 
-        this.dataBloc.onRemoveProduct(this.widget.product);
+        this.dataBloc.onRemoveProduct(this.product);
         showAlertDialog(context);
       },
 
@@ -146,9 +146,9 @@ class _ListItemState extends State<ListItem> {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle, /* Makes image circular */
                     image: DecorationImage(
-                      image: (this.widget.product.assetImage)
-                      ? AssetImage(this.widget.product.imageLocation)
-                      : FileImage(File(this.widget.product.imageLocation)),
+                      image: (this.product.assetImage)
+                      ? AssetImage(this.product.imageLocation)
+                      : FileImage(File(this.product.imageLocation)),
                       fit: BoxFit.fill, /* Fill area with image (no clipping) */
                     ),
                   ),
@@ -157,7 +157,7 @@ class _ListItemState extends State<ListItem> {
 
               /* Main text - Product name*/
               title: Text(
-                this.widget.product.name,
+                this.product.name,
                 style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
@@ -168,8 +168,7 @@ class _ListItemState extends State<ListItem> {
 
               /* Subtitle text - Quantity and total price */
               subtitle: Text(
-                "Quantity: ${this.widget.product.quantity}\nPrice: ${this.widget
-                    .product.totalPrice}€",
+                "Quantity: ${this.product.quantity}\nPrice: ${this.product.totalPrice}€",
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 17,

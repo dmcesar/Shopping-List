@@ -5,15 +5,19 @@ import 'package:sensors/sensors.dart';
 class SensorBloc {
 
   StreamSubscription _streamSubscription;
+  Stream<AccelerometerEvent> stream;
 
-  StreamController _controller;
+  StreamController<String> _controller;
 
   SensorBloc() {
 
     /* Creates widget-bloc stream */
-    this._controller = StreamController();
+    this._controller = StreamController<String>();
 
-    this._streamSubscription = accelerometerEvents.listen((AccelerometerEvent event) {
+    /* Gets stream from sensors.dart */
+    this.stream = accelerometerEvents;
+
+    this._streamSubscription = this.stream.listen((AccelerometerEvent event) {
 
       if(event.x >= 5) {
 
@@ -26,22 +30,22 @@ class SensorBloc {
 
   Stream get output => _controller.stream;
 
-  void pause() {
-
-    /* Stop handling events */
-    this._streamSubscription.pause();
-  }
-
   void signalShake() {
 
     /* Signal widget to show pop-up */
     this._controller.add("Shaked!");
   }
 
+  void pause() {
+
+    /* Stop handling events */
+    this._streamSubscription.pause();
+  }
+
   void resume() {
 
     /* Clear any other events received */
-    accelerometerEvents.drain();
+    this.stream.drain();
 
     this._streamSubscription.resume();
   }
