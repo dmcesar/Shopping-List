@@ -1,36 +1,39 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:sensors/sensors.dart';
 
 import 'package:mini_projeto/UI/product_form_screen.dart';
 import 'package:mini_projeto/UI/list_item.dart';
 
 import 'package:mini_projeto/data/product.dart';
 import 'package:mini_projeto/blocs/data_bloc.dart';
-import 'package:mini_projeto/blocs/sensor_bloc.dart';
 
 class ShoppingListScreen extends StatefulWidget {
 
   static const routeName = "/home";
 
   final DataBloc dataBloc;
-  final SensorBloc sensorBloc;
 
-  ShoppingListScreen({Key key, @required this.dataBloc, @required this.sensorBloc}) : super(key: key);
+  ShoppingListScreen({Key key, @required this.dataBloc}) : super(key: key);
 
   @override
-  _ShoppingListScreenState createState() => _ShoppingListScreenState(dataBloc, sensorBloc);
+  _ShoppingListScreenState createState() => _ShoppingListScreenState(dataBloc);
 }
 
 class _ShoppingListScreenState extends State<ShoppingListScreen> {
 
   DataBloc dataBloc;
-  SensorBloc sensorBloc;
 
   /* List containing products on Widget */
   List<Product> products;
 
-  _ShoppingListScreenState(this.dataBloc, this.sensorBloc) {
+  bool popupActive;
+
+  _ShoppingListScreenState(this.dataBloc) {
 
     this.products = [];
+    this.popupActive = false;
 
     /* Listen on any changes for the list from DataBloc */
     this.dataBloc.output.listen((onData) {
@@ -38,12 +41,14 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
       updateList(onData);
     });
 
-    /* Listen on any shakes */
-    this.sensorBloc.output.listen((onData) {
+    accelerometerEvents.listen((AccelerometerEvent event) {
 
-      print(onData);
+      if(event.x >= 5 && !this.popupActive) {
 
-      showAlertDialog(context);
+        this.popupActive = true;
+
+        showAlertDialog(context);
+      }
     });
   }
 
@@ -54,7 +59,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
       child: Text("Cancel"),
       onPressed:  () {
 
-        this.sensorBloc.resume();
+        this.popupActive = false;
 
         Navigator.pop(context);
       },
@@ -65,7 +70,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
 
         this.dataBloc.onClearList();
 
-        this.sensorBloc.resume();
+        this.popupActive = false;
 
         Navigator.pop(context);
       },
@@ -191,7 +196,6 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
   @override
   void dispose() {
 
-    this.sensorBloc.dispose();
     this.dataBloc.dispose();
     super.dispose();
   }

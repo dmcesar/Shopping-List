@@ -29,9 +29,6 @@ class DataBloc {
 
   /* Main operations */
 
-  /* Fetch products list from repository and adds it to sink */
-  void _getProducts() => this._controller.add(this._data.getAll());
-
   double getCheckoutPrice() {
 
     double toReturn = 0.0;
@@ -50,6 +47,12 @@ class DataBloc {
     return toReturn;
   }
 
+  /* Data operations */
+
+  /* Fetch products list from repository and adds it to sink */
+  void _getProducts() => this._controller.add(this._data.getAll());
+
+  /* Clears list */
   void onClearList() {
 
     this._data.clear();
@@ -60,7 +63,7 @@ class DataBloc {
   /* Modifies product if already exists in memory or adds it to data */
   void onAddOrModify(Product product) {
 
-    if(this._data.getProduct(product.name) != null) {
+    if (this._data.getProduct(product.name) != null) {
 
       this._data.modifyProduct(product);
 
@@ -98,7 +101,7 @@ class DataBloc {
     /* Fetches product from repository */
     Product toModify = this._data.getProduct(product.name);
 
-    if(toModify.quantity > 0) {
+    if (toModify.quantity > 0) {
 
       /* Decrements quantity */
       toModify.quantity--;
@@ -126,5 +129,5 @@ class DataBloc {
     _getProducts();
   }
 
-  void dispose() => _controller.close();
+  void dispose() => this._controller.close();
 }
