@@ -32,6 +32,31 @@ class DataBloc {
   /* Fetch products list from repository and adds it to sink */
   void _getProducts() => this._controller.add(this._data.getAll());
 
+  double getCheckoutPrice() {
+
+    double toReturn = 0.0;
+
+    this._data.getAll().forEach((p) => toReturn += p.totalPrice);
+
+    return toReturn;
+  }
+
+  int getTotalProducts() {
+
+    int toReturn = 0;
+
+    this._data.getAll().forEach((p) => toReturn += p.quantity);
+
+    return toReturn;
+  }
+
+  void onClearList() {
+
+    this._data.clear();
+
+    _getProducts();
+  }
+
   /* Modifies product if already exists in memory or adds it to data */
   void onAddOrModify(Product product) {
 

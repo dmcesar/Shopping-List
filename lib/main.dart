@@ -5,6 +5,7 @@ import "package:mini_projeto/UI/product_form_screen.dart";
 
 import 'package:mini_projeto/blocs/data_bloc.dart';
 import 'package:mini_projeto/blocs/form_bloc.dart';
+import 'package:mini_projeto/blocs/sensor_bloc.dart';
 
 void main() => runApp(ShoppingList());
 
@@ -14,6 +15,7 @@ class ShoppingList extends StatelessWidget {
   Widget build(BuildContext context) {
 
     var formBloc = FormBloc();
+    var sensorBloc = SensorBloc();
     var dataBloc = DataBloc(formBloc.output);
 
     return MaterialApp(
@@ -26,14 +28,9 @@ class ShoppingList extends StatelessWidget {
 
       routes: {
 
-        ShoppingListScreen.routeName: (context) => ShoppingListScreen(
-          formBloc: formBloc,
-          dataBloc: dataBloc,
-        ),
+        ShoppingListScreen.routeName: (context) => ShoppingListScreen(dataBloc: dataBloc, sensorBloc: sensorBloc),
 
-        ProductFormScreen.routeName: (context) => ProductFormScreen(
-          formBloc: formBloc,
-        ),
+        ProductFormScreen.routeName: (context) => ProductFormScreen(formBloc: formBloc),
       },
     );
   }

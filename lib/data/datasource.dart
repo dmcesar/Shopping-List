@@ -23,6 +23,9 @@ class DataSource {
 
   /* Data "setters" */
 
+  /* Clears data */
+  void clear() => this._datasource.clear();
+
   /* Adds product to data */
   void addProduct(Product product) {
 

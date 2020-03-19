@@ -1,55 +1,97 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
 import 'package:mini_projeto/UI/product_form_screen.dart';
+import 'package:mini_projeto/UI/list_item.dart';
 
 import 'package:mini_projeto/data/product.dart';
-import 'package:mini_projeto/blocs/form_bloc.dart';
 import 'package:mini_projeto/blocs/data_bloc.dart';
-import 'package:mini_projeto/UI/list_item.dart';
+import 'package:mini_projeto/blocs/sensor_bloc.dart';
 
 class ShoppingListScreen extends StatefulWidget {
 
   static const routeName = "/home";
 
-  final FormBloc formBloc;
   final DataBloc dataBloc;
+  final SensorBloc sensorBloc;
 
-  ShoppingListScreen({Key key, @required this.formBloc, @required this.dataBloc}) : super(key: key);
+  ShoppingListScreen({Key key, @required this.dataBloc, @required this.sensorBloc}) : super(key: key);
 
   @override
-  _ShoppingListScreenState createState() => _ShoppingListScreenState(formBloc, dataBloc);
+  _ShoppingListScreenState createState() => _ShoppingListScreenState(dataBloc, sensorBloc);
 }
 
 class _ShoppingListScreenState extends State<ShoppingListScreen> {
 
-  FormBloc formBloc;
   DataBloc dataBloc;
+  SensorBloc sensorBloc;
 
   /* List containing products on Widget */
   List<Product> products;
 
-  _ShoppingListScreenState(this.formBloc, this.dataBloc) {
+  _ShoppingListScreenState(this.dataBloc, this.sensorBloc) {
 
     this.products = [];
 
-    /* Listen on any changes for the list */
+    /* Listen on any changes for the list from DataBloc */
     this.dataBloc.output.listen((onData) {
 
-      setList(onData);
+      updateList(onData);
+    });
+
+    /* Listen on any shakes */
+    this.sensorBloc.output.listen((onData) {
+
+      print(onData);
+
+      showAlertDialog(context);
     });
   }
-  
-  double getCheckoutPrice() {
-    
-    double toReturn = 0.0;
-    
-    this.products.forEach((p) => toReturn += p.totalPrice);
 
-    return toReturn;
+  showAlertDialog(BuildContext context) {
+
+    // set up the buttons
+    Widget cancelButton = FlatButton(
+      child: Text("Cancel"),
+      onPressed:  () {
+
+        this.sensorBloc.resume();
+
+        Navigator.pop(context);
+      },
+    );
+    Widget continueButton = FlatButton(
+      child: Text("Continue"),
+      onPressed:  () {
+
+        this.dataBloc.onClearList();
+
+        this.sensorBloc.resume();
+
+        Navigator.pop(context);
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Clear list?"),
+      content: Text("Pressing \"Continue\" will clear all products from the list"),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
   }
 
   /* Re-writes products list to update UI */
-  void setList(List<Product> list) {
+  void updateList(List<Product> list) {
 
     setState(() {
 
@@ -102,12 +144,12 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
                 children: <Widget>[
 
                   Text(
-                      "Nº products : ${this.products.length}",
+                      "Nº products : ${this.dataBloc.getTotalProducts()}",
                       style: textStyle
                   ),
 
                   Text(
-                    "Total price: ${this.getCheckoutPrice()}€",
+                    "Total price: ${this.dataBloc.getCheckoutPrice()}€",
                     style: textStyle,
                   ),
                 ],
@@ -149,8 +191,8 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
   @override
   void dispose() {
 
+    this.sensorBloc.dispose();
     this.dataBloc.dispose();
-    this.formBloc.dispose();
     super.dispose();
   }
 }
